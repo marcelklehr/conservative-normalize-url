@@ -4,7 +4,7 @@
   "description": "Normalize URLs conservatively, taking into account old specs to avoid breaking things.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "nyc ava"
   },
   "repository": {
     "type": "git",
