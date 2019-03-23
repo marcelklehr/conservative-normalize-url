@@ -211,7 +211,6 @@ function unquote(text, exceptions = []) {
     if (c !== '%') {
       if (c.charCodeAt(0) >= 128 || c.charCodeAt(0) <= 32 || (!(/[a-zA-Z0-9]/).test(c) && !~exceptions.indexOf(c))) {
         s = encodeURIComponent(c)
-      console.log(s)
       } else {
         s = c
       }
