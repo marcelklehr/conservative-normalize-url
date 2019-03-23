@@ -21,6 +21,8 @@ const SCHEMES = [
   'ws',
   'wss'
 ]
+const DEFAULT_SCHEME = {}
+
 const SCHEME_CHARS = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 const IP_CHARS = '0123456789.:'
 const DEFAULT_PORT = {
@@ -43,7 +45,7 @@ const QUOTE_EXCEPTIONS = {
  * @param string url Url to load and analyze
  * @return string Normalized url;
  */
-export default function(input_url) {
+module.exports = function(input_url) {
   let url = input_url
   while (~' \t\n'.indexOf(url[0])) url = url.substr(1)
   while (~' \t\n'.indexOf(url[url.length - 1])) {
@@ -57,7 +59,7 @@ export default function(input_url) {
   let netloc
   let path
 
-  if (parts['scheme'] && parts['scheme'].length > 0) {
+  if (parts['scheme'] && parts['scheme'].length > 0 || parts['scheme'] == DEFAULT_SCHEME) {
     netloc = parts['netloc']
     if (~SCHEMES.indexOf(parts['scheme'])) {
       path = normalize_path(parts['path'])
@@ -102,17 +104,22 @@ function construct(parts) {
     } else {
       url += parts['scheme'] + ':'
     }
+  }else if (parts['scheme'] === DEFAULT_SCHEME) {
+    url += '//'
   }
   if (parts['username'].length > 0 && parts['password'].length > 0) {
     url += parts['username'] + ':' + parts['password'] + '@'
   } else if (parts['username'].length > 0) {
     url += parts['username'] + '@'
   }
+  if (parts['scheme'] && !parts['host']) {
+    throw new Error('URIError')
+  }
   url += parts['host']
   if (parts['port'].length > 0) {
     url += ':' + parts['port']
   }
-  if (parts['path'].length > 0) {
+  if (parts['path'].length > 1 || parts['query'].length > 0 || parts['fragment'] > 0) {
     url += parts['path']
   }
   if (parts['query'].length > 0) {
@@ -202,8 +209,9 @@ function unquote(text, exceptions = []) {
     let c = text[k]
     let s
     if (c !== '%') {
-      if (c.charCodeAt(0) >= 128) {
+      if (c.charCodeAt(0) >= 128 || c.charCodeAt(0) <= 32 || (!(/[a-zA-Z0-9]/).test(c) && !~exceptions.indexOf(c))) {
         s = encodeURIComponent(c)
+      console.log(s)
       } else {
         s = c
       }
@@ -218,7 +226,10 @@ function unquote(text, exceptions = []) {
       }
       let b = parseInt(text[k + 1] + text[k + 2], 16)
       k += 2
-      if ((b & (1 << 7)) === 0) {
+      if (b <= 32) {
+        // noop
+        s = text.substr(start, k - start + 1)
+      } else if ((b & (1 << 7)) === 0) {
         c = String.fromCharCode(b)
         if (!~exceptions.indexOf(c)) {
           s = c
@@ -263,50 +274,6 @@ function unquote(text, exceptions = []) {
   return r
 }
 
-// Unmarshals a string from an Uint8Array.
-function decodeUTF8(bytes) {
-  var i = 0,
-    s = ''
-  while (i < bytes.length) {
-    var c = bytes[i++]
-    if (c > 127) {
-      if (c > 191 && c < 224) {
-        if (i >= bytes.length)
-          throw new Error('UTF-8 decode: incomplete 2-byte sequence')
-        c = ((c & 31) << 6) | (bytes[i++] & 63)
-      } else if (c > 223 && c < 240) {
-        if (i + 1 >= bytes.length)
-          throw new Error('UTF-8 decode: incomplete 3-byte sequence')
-        c = ((c & 15) << 12) | ((bytes[i++] & 63) << 6) | (bytes[i++] & 63)
-      } else if (c > 239 && c < 248) {
-        if (i + 2 >= bytes.length)
-          throw new Error('UTF-8 decode: incomplete 4-byte sequence')
-        c =
-          ((c & 7) << 18) |
-          ((bytes[i++] & 63) << 12) |
-          ((bytes[i++] & 63) << 6) |
-          (bytes[i++] & 63)
-      } else
-        throw new Error(
-          'UTF-8 decode: unknown multibyte start 0x' +
-            c.toString(16) +
-            ' at index ' +
-            (i - 1)
-        )
-    }
-    if (c <= 0xffff) s += String.fromCharCode(c)
-    else if (c <= 0x10ffff) {
-      c -= 0x10000
-      s += String.fromCharCode((c >> 10) | 0xd800)
-      s += String.fromCharCode((c & 0x3ff) | 0xdc00)
-    } else
-      throw new Error(
-        'UTF-8 decode: code point 0x' + c.toString(16) + ' exceeds UTF-16 reach'
-      )
-  }
-  return s
-}
-
 function split(url) {
   let scheme = ''
   let netloc = ''
@@ -324,7 +291,11 @@ function split(url) {
   ) {
     scheme_end = -1
   }
-  if (scheme_end > 0) {
+  if(url.substr(0,2) === '//'){
+    scheme = DEFAULT_SCHEME
+    rest = url.substr(2)
+  }
+  if (!scheme && scheme_end > 0) {
     for (let i = 0; i < scheme_end; i++) {
       const c = url[i]
       if (!~SCHEME_CHARS.indexOf(c)) {
@@ -337,7 +308,7 @@ function split(url) {
       }
     }
   }
-  if (!scheme) {
+  if (!scheme){
     rest = url
   }
   let l_path = rest.indexOf('/')
@@ -427,4 +398,3 @@ function split_netloc(input_netloc) {
   }
   return [username, password, host, port]
 }
-
