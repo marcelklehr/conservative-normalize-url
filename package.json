@@ -1,0 +1,27 @@
+{
+  "name": "conservative-normalize-url",
+  "version": "1.0.0",
+  "description": "Normalize URLs conservatively, taking into account old specs to avoid breaking things.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/marcelklehr/conservative-normalize-url.git"
+  },
+  "keywords": [
+    "url",
+    "normalize",
+    "normalize-url",
+    "uri",
+    "link",
+    "http"
+  ],
+  "author": "Marcel Klehr <mklehr@gmx.net>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/marcelklehr/conservative-normalize-url/issues"
+  },
+  "homepage": "https://github.com/marcelklehr/conservative-normalize-url#readme"
+}
