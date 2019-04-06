@@ -23,6 +23,9 @@ test('main', t => {
 	//t.is(normalizeUrl('https://foo.com/http://bar.com/foo//bar'), 'https://foo.com/http://bar.com/foo/bar');
 	t.is(normalizeUrl('https://foo.com/?foo=http://bar.com'), 'https://foo.com/?foo=http%3A%2F%2Fbar.com');
 	t.is(normalizeUrl('http://sindresorhus.com/%7Efoo/'), 'http://sindresorhus.com/~foo/', 'decode URI octets');
+	t.is(normalizeUrl('http://sindresorhus.com/foo/######/blablabla'), 'http://sindresorhus.com/foo/######/blablabla', 'fragments');
+  t.is(normalizeUrl('https://mylink.com/#/#/#/#/#/'), 'https://mylink.com#/#/#/#/#/')
+  t.is(normalizeUrl('http://google.com####/foobar'), 'http://google.com####/foobar')
 	t.is(normalizeUrl('http://sindresorhus.com/?'), 'http://sindresorhus.com');
 	t.is(normalizeUrl('http://êxample.com'), 'http://xn--xample-hva.com');
 	t.is(normalizeUrl('http://sindresorhus.com/?b=bar&a=foo'), 'http://sindresorhus.com/?a=foo&b=bar');

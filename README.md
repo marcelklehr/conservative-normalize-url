@@ -21,7 +21,6 @@ I created this library, because I was frustrated by the lack of backwards-compat
 * adding or changing the protocol
 * removing the auth portion of the URL
 * breaking URLs with use `;` as a query parameter separator
-*
 
 ## Usage
 ```

@@ -37,7 +37,7 @@ const DEFAULT_PORT = {
 const QUOTE_EXCEPTIONS = {
   path: ' /?+#',
   query: ' &=+#',
-  fragment: ' +#'
+  fragment: ' +#/'
 }
 
 /**
@@ -313,7 +313,7 @@ function split(url) {
   let l_path = rest.indexOf('/')
   let l_query = rest.indexOf('?')
   let l_frag = rest.indexOf('#')
-  if (l_path > 0) {
+  if (l_path > 0 && ((l_frag > l_path && l_frag > 0) || (l_query > l_path && l_query > 0) || l_query < 0 && l_frag < 0)) {
     if (l_query > 0 && l_frag > 0) {
       netloc = rest.substr(0, l_path)
       path = rest.substr(l_path, Math.min(l_query, l_frag) - l_path)
@@ -333,7 +333,7 @@ function split(url) {
       path = rest.substr(l_path)
     }
   } else {
-    if (l_query > 0) {
+    if (l_query > 0 && (l_frag > l_query || l_frag === -1)) {
       netloc = rest.substr(0, l_query)
     } else if (l_frag > 0) {
       netloc = rest.substr(0, l_frag)
@@ -341,7 +341,7 @@ function split(url) {
       netloc = rest
     }
   }
-  if (l_query > 0) {
+  if (l_query > 0 && (l_frag > l_query || l_frag === -1)) {
     if (l_frag > 0) {
       query = rest.substr(l_query + 1, l_frag - (l_query + 1))
     } else {
