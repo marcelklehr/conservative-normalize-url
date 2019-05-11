@@ -119,7 +119,7 @@ function construct(parts) {
   if (parts['port'].length > 0) {
     url += ':' + parts['port']
   }
-  if (parts['path'].length > 1 || parts['query'].length > 0 || parts['fragment'] > 0) {
+  if (parts['path'].length > 1 || parts['query'].length > 0 || parts['fragment'].length > 0) {
     url += parts['path']
   }
   if (parts['query'].length > 0) {
