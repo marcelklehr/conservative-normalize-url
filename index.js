@@ -35,7 +35,7 @@ const DEFAULT_PORT = {
   ldap: '389'
 }
 const QUOTE_EXCEPTIONS = {
-  path: ' /?+#',
+  path: ' /?+#~',
   query: ' &=+#',
   fragment: ' +#/'
 }
@@ -230,7 +230,7 @@ function unquote(text, exceptions = []) {
         s = text.substr(start, k - start + 1)
       } else if ((b & (1 << 7)) === 0) {
         c = String.fromCharCode(b)
-        if (!~exceptions.indexOf(c)) {
+        if ((/[a-zA-Z0-9]/).test(c) || ~exceptions.indexOf(c)) {
           s = c
         } else {
           s = text.substr(start, k - start + 1)
