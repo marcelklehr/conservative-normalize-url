@@ -1,6 +1,6 @@
 {
   "name": "conservative-normalize-url",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Normalize URLs conservatively, taking into account old specs to avoid breaking things.",
   "main": "index.js",
   "scripts": {
